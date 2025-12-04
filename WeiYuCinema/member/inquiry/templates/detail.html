@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂票詳情 - 威宇影城售票系統</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+</head>
+<body>
+    <!-- 頁首佔位符 -->
+    <div id="header-placeholder"></div>
+
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-title">
+            <h1>🎫 訂票詳情</h1>
+            <p>訂單編號：<?php echo htmlspecialchars($record['orderNumber']); ?></p>
+        </div>
+
+        <!-- 訂單狀態 -->
+        <div class="section-box">
+            <div class="order-status">
+                <span class="status status-<?php echo $record['orderStatusId']; ?>">
+                    <?php echo htmlspecialchars($record['orderStatusName']); ?>
+                </span>
+                <div class="order-actions">
+                    <a href="index.php" class="btn btn-secondary">← 返回列表</a>
+                    <?php if ($record['orderStatusId'] == 1): // 已完成，可退票或修改 ?>
+                    <a href="refund.php?orderNumber=<?php echo urlencode($record['orderNumber']); ?>" 
+                       class="btn btn-warning">🔄 申請退票</a>
+                    <a href="change.php?orderNumber=<?php echo urlencode($record['orderNumber']); ?>" 
+                       class="btn btn-info">✏️ 修改訂票</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- 電影資訊 -->
+        <div class="section-box">
+            <h2 class="section-title">🎬 電影資訊</h2>
+            <div class="movie-detail-card">
+                <?php if (!empty($record['movieImg'])): ?>
+                <div class="movie-poster">
+                    <img src="/WeiYuCinema/images/movies/<?php echo htmlspecialchars($record['movieImg']); ?>" 
+                         alt="<?php echo htmlspecialchars($record['movieName']); ?>">
+                </div>
+                <?php endif; ?>
+                <div class="movie-info">
+                    <h3><?php echo htmlspecialchars($record['movieName']); ?></h3>
+                    <div class="movie-details">
+                        <p><strong>片長：</strong><?php echo $record['movieTime']; ?> 分鐘</p>
+                        <p><strong>分級：</strong><?php echo htmlspecialchars($record['gradeName']); ?></p>
+                        <p><strong>導演：</strong><?php echo htmlspecialchars($record['movieDirector']); ?></p>
+                        <p><strong>演員：</strong><?php echo htmlspecialchars($record['movieActor']); ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 場次資訊 -->
+        <div class="section-box">
+            <h2 class="section-title">🏢 場次資訊</h2>
+            <div class="showing-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>影城：</strong>
+                        <span><?php echo htmlspecialchars($record['cinemaName']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>地址：</strong>
+                        <span><?php echo htmlspecialchars($record['cinemaAddress']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>電話：</strong>
+                        <span><?php echo htmlspecialchars($record['cinemaPhone']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>影廳：</strong>
+                        <span><?php echo htmlspecialchars($record['theaterName']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>日期：</strong>
+                        <span><?php echo $record['showingDate']; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>時間：</strong>
+                        <span><?php echo $record['startTime']; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>版本：</strong>
+                        <span><?php echo htmlspecialchars($record['versionName']); ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 座位資訊 -->
+        <div class="section-box">
+            <h2 class="section-title">💺 座位資訊</h2>
+            <div class="seat-info">
+                <div class="seat-list">
+                    <?php foreach ($seatArray as $seat): ?>
+                    <span class="seat-tag selected"><?php echo htmlspecialchars($seat); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <p><strong>票種：</strong><?php echo htmlspecialchars($record['ticketTypeName']); ?></p>
+                <p><strong>票數：</strong><?php echo $record['ticketNums']; ?> 張</p>
+            </div>
+        </div>
+
+        <!-- 餐點資訊 -->
+        <?php if (!empty($mealDetails)): ?>
+        <div class="section-box">
+            <h2 class="section-title">🍿 餐點資訊</h2>
+            <div class="meal-info">
+                <table class="meal-table">
+                    <thead>
+                        <tr>
+                            <th>餐點名稱</th>
+                            <th>單價</th>
+                            <th>數量</th>
+                            <th>小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $mealTotal = 0;
+                        foreach ($mealDetails as $mealId => $meal): 
+                            $mealTotal += $meal['subtotal'];
+                        ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($meal['name']); ?></td>
+                            <td>$<?php echo number_format($meal['price']); ?></td>
+                            <td><?php echo $meal['quantity']; ?></td>
+                            <td>$<?php echo number_format($meal['subtotal']); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>餐點總計</strong></td>
+                            <td><strong>$<?php echo number_format($mealTotal); ?></strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- 付款資訊 -->
+        <div class="section-box">
+            <h2 class="section-title">💳 付款資訊</h2>
+            <div class="payment-info">
+                <div class="payment-summary">
+                    <div class="summary-row">
+                        <span>電影票費用：</span>
+                        <span>$<?php echo number_format($record['totalPrice'] - ($mealTotal ?? 0)); ?></span>
+                    </div>
+                    <?php if (!empty($mealDetails)): ?>
+                    <div class="summary-row">
+                        <span>餐點費用：</span>
+                        <span>$<?php echo number_format($mealTotal); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <div class="summary-row total">
+                        <span><strong>總金額：</strong></span>
+                        <span><strong>$<?php echo number_format($record['totalPrice']); ?></strong></span>
+                    </div>
+                </div>
+                <div class="payment-details">
+                    <p><strong>付款方式：</strong>會員儲值卡</p>
+                    <p><strong>訂票時間：</strong><?php echo $record['time']; ?></p>
+                    <p><strong>取票號碼：</strong><span class="ticket-number"><?php echo $record['getTicketNum']; ?></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 取票說明 -->
+        <div class="section-box">
+            <h2 class="section-title">📋 取票說明</h2>
+            <div class="ticket-instructions">
+                <ol>
+                    <li>請於電影開演前30分鐘到達影城</li>
+                    <li>至自動取票機或櫃台出示取票號碼：<strong><?php echo $record['getTicketNum']; ?></strong></li>
+                    <li>請攜帶會員卡或提供會員資料進行身份驗證</li>
+                    <li>取票後請確認電影資訊、座位號碼及場次時間</li>
+                    <li>如需退票或修改，請於開演前2小時完成</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾佔位符 -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 載入核心JavaScript -->
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+</body>
+</html>

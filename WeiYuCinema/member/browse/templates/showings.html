@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>場次查詢 - 威宇影城</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+</head>
+<body>
+    <!-- 頁首佔位符 -->
+    <div id="header-placeholder"></div>
+    
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-title">
+            <h1>場次查詢</h1>
+            <p>查詢電影放映時間</p>
+        </div>
+        
+        <!-- 篩選功能 -->
+        <div class="section-box">
+            <h2 class="section-title">🔍 篩選場次</h2>
+            <form method="GET" action="">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="movie">選擇電影</label>
+                        <select id="movie" name="movie">
+                            <option value="">所有電影</option>
+                            <?php foreach ($movies as $movie): ?>
+                                <option value="<?php echo $movie['movieId']; ?>" 
+                                        <?php echo ($movieFilter == $movie['movieId']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($movie['movieName']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cinema">選擇影城</label>
+                        <select id="cinema" name="cinema">
+                            <option value="">所有影城</option>
+                            <?php foreach ($cinemas as $cinema): ?>
+                                <option value="<?php echo $cinema['cinemaId']; ?>" 
+                                        <?php echo ($cinemaFilter == $cinema['cinemaId']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cinema['cinemaName']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">選擇日期</label>
+                        <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($dateFilter); ?>" min="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" style="margin-right: 10px;">🔍 查詢</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='showings.php'">清除篩選</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 場次列表 -->
+        <div class="section-box">
+            <h2 class="section-title">🎬 場次列表</h2>
+            
+            <?php if (!empty($showings)): ?>
+                <div style="display: grid; gap: 20px; margin-top: 20px;">
+                    <?php foreach ($showings as $showing): ?>
+                        <div class="showing-card" style="background: #2c2c2c; border-radius: 12px; padding: 25px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;">
+                            <div class="showing-info">
+                                <h3 style="margin: 0 0 10px 0; color: var(--primary-color); font-size: 20px;">
+                                    <?php echo htmlspecialchars($showing['movieName']); ?>
+                                </h3>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                                    <div>
+                                        <span style="color: var(--text-muted); font-size: 14px;">🏢 影城</span><br>
+                                        <span style="font-weight: bold;"><?php echo htmlspecialchars($showing['cinemaName']); ?></span>
+                                    </div>
+                                    <div>
+                                        <span style="color: var(--text-muted); font-size: 14px;">🎭 廳院</span><br>
+                                        <span style="font-weight: bold;"><?php echo htmlspecialchars($showing['theaterName']); ?></span>
+                                    </div>
+                                    <div>
+                                        <span style="color: var(--text-muted); font-size: 14px;">📅 日期</span><br>
+                                        <span style="font-weight: bold;"><?php echo date('m/d (D)', strtotime($showing['showingDate'])); ?></span>
+                                    </div>
+                                    <div>
+                                        <span style="color: var(--text-muted); font-size: 14px;">⏰ 時間</span><br>
+                                        <span style="font-weight: bold; color: var(--primary-color);"><?php echo htmlspecialchars($showing['startTime']); ?></span>
+                                    </div>
+                                    <div>
+                                        <span style="color: var(--text-muted); font-size: 14px;">🎥 版本</span><br>
+                                        <span style="font-weight: bold;"><?php echo htmlspecialchars($showing['versionName']); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="showing-actions" style="text-align: center;">
+                                <a href="../booking/booking.php?movie=<?php echo $showing['movieId']; ?>&cinema=<?php echo $showing['cinemaId']; ?>&date=<?php echo $showing['showingDate']; ?>" 
+                                   class="btn btn-primary" 
+                                   style="padding: 15px 25px; font-size: 16px; font-weight: bold;">
+                                    🎟️ 立即購票
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center" style="padding: 60px 20px;">
+                    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;">🎬</div>
+                    <h3 class="text-muted">沒有找到符合條件的場次</h3>
+                    <p class="text-muted">請調整篩選條件或選擇其他日期</p>
+                    <button class="btn btn-primary" onclick="location.href='showings.php'" style="margin-top: 20px;">
+                        查看所有場次
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- 返回按鈕 -->
+        <div class="text-center" style="margin-top: 40px;">
+            <a href="../index.php" class="btn btn-secondary" style="padding: 15px 30px; font-size: 16px;">
+                ← 返回會員首頁
+            </a>
+        </div>
+    </div>
+    
+    <!-- 頁尾佔位符 -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- 載入核心JavaScript -->
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+    
+    <script>
+        // 場次卡片懸停效果
+        document.querySelectorAll('.showing-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 12px 30px rgba(0,0,0,0.6)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.4)';
+            });
+        });
+    </script>
+</body>
+</html>

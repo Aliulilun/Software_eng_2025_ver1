@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇座位 - 威宇影城</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+</head>
+<body>
+    <!-- 頁首佔位符 -->
+    <div id="header-placeholder"></div>
+    
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-title">
+            <h1>選擇座位</h1>
+            <p>請選擇您的座位</p>
+        </div>
+        
+        <!-- 場次資訊 -->
+        <div class="section-box">
+            <div class="showing-info" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 0;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: center;">
+                    <div>
+                        <h3 style="margin: 0 0 10px 0; font-size: 24px;"><?php echo htmlspecialchars($showing['movieName']); ?></h3>
+                        <p style="margin: 0; opacity: 0.9;"><?php echo htmlspecialchars($showing['cinemaName']); ?> - <?php echo htmlspecialchars($showing['theaterName']); ?></p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">放映時間</div>
+                        <div style="font-size: 20px; font-weight: bold;">
+                            <?php echo date('m/d H:i', strtotime($showing['showDate'] . ' ' . $showing['showTime'])); ?>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">票價</div>
+                        <div style="font-size: 24px; font-weight: bold; color: var(--primary-color);">
+                            NT$ <?php echo number_format($ticketPrice); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 座位圖例 -->
+        <div class="section-box">
+            <h3 class="section-title">🎭 座位圖例</h3>
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="seat available" style="width: 30px; height: 30px; background: #28a745; border: 2px solid #229954; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;">A1</div>
+                    <span>可選座位</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="seat selected" style="width: 30px; height: 30px; background: var(--primary-color); border: 2px solid #e0a800; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 12px; font-weight: bold;">B2</div>
+                    <span>已選座位</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="seat occupied" style="width: 30px; height: 30px; background: #dc3545; border: 2px solid #c82333; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold;">C3</div>
+                    <span>已售出</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 座位選擇區域 -->
+        <div class="section-box">
+            <h3 class="section-title">🎬 銀幕</h3>
+            
+            <!-- 銀幕 -->
+            <div class="screen" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; text-align: center; padding: 15px; margin: 0 auto 40px auto; border-radius: 50px; width: 80%; position: relative;">
+                <div style="font-size: 18px; font-weight: bold;">🎬 SCREEN 銀幕 🎬</div>
+                <div style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 20px solid #34495e;"></div>
+            </div>
+            
+            <!-- 座位地圖 -->
+            <div class="seat-map" style="background: #1a1a1a; padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                <?php
+                $currentRow = '';
+                $seatCount = 0;
+                ?>
+                
+                <?php foreach ($seats as $seat): ?>
+                    <?php
+                    $row = substr($seat['seatNumber'], 0, 1);
+                    if ($row !== $currentRow) {
+                        if ($currentRow !== '') {
+                            echo '</div>'; // 結束前一行
+                        }
+                        echo '<div class="seat-row" style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center; justify-content: center;">';
+                        echo '<div class="row-label" style="width: 40px; text-align: center; font-weight: bold; font-size: 16px; color: var(--primary-color);">' . $row . '</div>';
+                        $currentRow = $row;
+                    }
+                    
+                    $seatClass = 'available';
+                    $clickable = 'true';
+                    if ($seat['seatEmpty'] == 0) {
+                        $seatClass = 'occupied';
+                        $clickable = 'false';
+                    }
+                    ?>
+                    
+                    <div class="seat <?php echo $seatClass; ?>" 
+                         data-seat="<?php echo htmlspecialchars($seat['seatNumber']); ?>"
+                         data-clickable="<?php echo $clickable; ?>"
+                         style="width: 35px; height: 35px; border: 2px solid; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: <?php echo $seatClass === 'available' ? 'pointer' : 'not-allowed'; ?>; font-size: 12px; font-weight: bold; transition: all 0.3s; <?php echo $seatClass === 'available' ? 'background: #28a745; border-color: #229954; color: white;' : 'background: #dc3545; border-color: #c82333; color: white; opacity: 0.6;'; ?>">
+                        <?php echo htmlspecialchars(substr($seat['seatNumber'], 1)); ?>
+                    </div>
+                <?php endforeach; ?>
+                
+                <?php if ($currentRow !== ''): ?>
+                    </div> <!-- 結束最後一行 -->
+                <?php endif; ?>
+            </div>
+            
+            <!-- 選座說明 -->
+            <div style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">
+                <p>💡 提示：點擊綠色座位進行選擇，最多可選擇 8 個座位</p>
+            </div>
+        </div>
+        
+        <!-- 訂票摘要 -->
+        <div class="section-box">
+            <h3 class="section-title">📋 訂票摘要</h3>
+            <div style="background: #2c2c2c; padding: 25px; border-radius: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">已選座位</div>
+                        <div id="selectedSeats" style="font-size: 18px; font-weight: bold; color: var(--primary-color);">尚未選擇</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">票數</div>
+                        <div id="ticketCount" style="font-size: 18px; font-weight: bold;">0</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">單價</div>
+                        <div style="font-size: 18px; font-weight: bold;">NT$ <?php echo number_format($ticketPrice); ?></div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">總金額</div>
+                        <div id="totalPrice" style="font-size: 24px; font-weight: bold; color: var(--primary-color);">NT$ 0</div>
+                    </div>
+                </div>
+                
+                <form action="select_meal.php" method="POST" id="seatForm">
+                    <input type="hidden" name="showingId" value="<?php echo htmlspecialchars($showingId); ?>">
+                    <input type="hidden" name="selectedSeats" id="selectedSeatsInput">
+                    <input type="hidden" name="ticketCount" id="ticketCountInput">
+                    <input type="hidden" name="totalPrice" id="totalPriceInput">
+                    
+                    <div class="text-center">
+                        <button type="submit" id="nextBtn" class="btn btn-primary" disabled style="padding: 15px 40px; font-size: 18px;">
+                            下一步：選擇餐點 →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 返回按鈕 -->
+        <div class="text-center" style="margin-top: 40px;">
+            <a href="booking.php" class="btn btn-secondary" style="padding: 15px 30px; font-size: 16px;">
+                ← 重新選擇場次
+            </a>
+        </div>
+    </div>
+    
+    <!-- 頁尾佔位符 -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- 載入核心JavaScript -->
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+    
+    <script>
+        // 初始化座位選擇功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const ticketPrice = <?php echo $ticketPrice; ?>;
+            
+            // 使用全域函數初始化座位選擇
+            if (typeof window.initSeatSelection === 'function') {
+                window.initSeatSelection(ticketPrice);
+            } else {
+                // 備用座位選擇邏輯
+                let selectedSeats = [];
+                const maxSeats = 8;
+                
+                document.querySelectorAll('.seat.available').forEach(seat => {
+                    seat.addEventListener('click', function() {
+                        const seatId = this.dataset.seat;
+                        
+                        if (this.classList.contains('selected')) {
+                            // 取消選擇
+                            this.classList.remove('selected');
+                            this.style.background = '#28a745';
+                            this.style.borderColor = '#229954';
+                            this.style.color = 'white';
+                            this.style.transform = 'scale(1)';
+                            this.style.boxShadow = 'none';
+                            selectedSeats = selectedSeats.filter(s => s !== seatId);
+                        } else {
+                            // 檢查是否超過最大座位數
+                            if (selectedSeats.length >= maxSeats) {
+                                showNotification('最多只能選擇 ' + maxSeats + ' 個座位', 'warning');
+                                return;
+                            }
+                            
+                            // 選擇座位
+                            this.classList.add('selected');
+                            this.style.background = 'var(--primary-color)';
+                            this.style.borderColor = '#e0a800';
+                            this.style.color = '#000';
+                            this.style.transform = 'scale(1.1)';
+                            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                            selectedSeats.push(seatId);
+                        }
+                        
+                        updateBookingSummary();
+                    });
+                });
+                
+                function updateBookingSummary() {
+                    const ticketCount = selectedSeats.length;
+                    const totalPrice = ticketCount * ticketPrice;
+                    
+                    document.getElementById('selectedSeats').textContent = selectedSeats.length > 0 ? selectedSeats.sort().join(', ') : '尚未選擇';
+                    document.getElementById('ticketCount').textContent = ticketCount;
+                    document.getElementById('totalPrice').textContent = 'NT$ ' + totalPrice.toLocaleString();
+                    
+                    // 更新隱藏欄位
+                    document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
+                    document.getElementById('ticketCountInput').value = ticketCount;
+                    document.getElementById('totalPriceInput').value = totalPrice;
+                    
+                    // 啟用/禁用下一步按鈕
+                    const nextBtn = document.getElementById('nextBtn');
+                    nextBtn.disabled = ticketCount === 0;
+                    
+                    if (ticketCount > 0) {
+                        nextBtn.style.opacity = '1';
+                        nextBtn.style.cursor = 'pointer';
+                    } else {
+                        nextBtn.style.opacity = '0.6';
+                        nextBtn.style.cursor = 'not-allowed';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

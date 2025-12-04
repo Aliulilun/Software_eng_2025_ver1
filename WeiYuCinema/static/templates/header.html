@@ -1,0 +1,41 @@
+<header>
+    <div class="nav-container">
+        <a href="/WeiYuCinema/index.php" class="logo">威宇影城</a>
+        
+        <nav class="nav-links">
+            <!-- 未登入時顯示 -->
+            <div id="guest-nav" class="hidden">
+                <a href="/WeiYuCinema/index.php">首頁</a>
+                <a href="/WeiYuCinema/auth/login.php">會員登入/註冊</a>
+                <a href="/WeiYuCinema/auth/login.php?admin=1">後台管理</a>
+            </div>
+            
+            <!-- 一般會員登入時顯示 -->
+            <div id="member-nav" class="hidden">
+                <a href="/WeiYuCinema/member/index.php">會員首頁</a>
+                <a href="/WeiYuCinema/member/browse/movies.php">瀏覽電影</a>
+                <a href="/WeiYuCinema/member/booking/booking.php">購票服務</a>
+                <a href="/WeiYuCinema/member/inquiry/index.php">訂票紀錄</a>
+                <a href="/WeiYuCinema/member/topup/index.php">儲值卡</a>
+                <a href="/WeiYuCinema/member/profile/profile.php">會員資料</a>
+            </div>
+            
+            <!-- 管理員登入時顯示 -->
+            <div id="admin-nav" class="hidden">
+                <a href="/WeiYuCinema/admin/index.php">管理首頁</a>
+                <a href="/WeiYuCinema/admin/movies.php">電影管理</a>
+                <a href="/WeiYuCinema/admin/cinemas.php">影城管理</a>
+                <a href="/WeiYuCinema/admin/orders.php">訂單管理</a>
+                <a href="/WeiYuCinema/admin/members.php">會員管理</a>
+            </div>
+            
+            <!-- 使用者資訊區域 -->
+            <div class="user-info">
+                <span id="user-welcome" class="user-welcome hidden">
+                    歡迎，<span id="user-name" class="user-name"></span>！
+                </span>
+                <a href="/WeiYuCinema/auth/logout.php" id="logout-link" class="hidden">登出</a>
+            </div>
+        </nav>
+    </div>
+</header>
