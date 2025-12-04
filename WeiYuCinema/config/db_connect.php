@@ -7,7 +7,7 @@
 // 資料庫連線參數
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'phil930820');
+define('DB_PASS', '12345678');
 define('DB_NAME', 'WeiYuCinema');
 
 // 建立資料庫連線
