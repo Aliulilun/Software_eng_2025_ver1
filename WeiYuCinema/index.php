@@ -50,7 +50,7 @@ if (isset($_SESSION['memberId'])) {
         <div class="section-box">
             <h3 class="section-title">🔥 現正熱映</h3>
             <div class="text-center">
-                <p class="text-muted">系統連線錯誤。</p>
+
             </div>
         </div>
         
