@@ -1,16 +1,16 @@
 /* 威宇影城 - 統一樣式表 */
 :root {
-    --primary-color: #ffc107;    /* 威秀風格黃 */
+    --primary-color: #f4d26d;    /* 威秀風格黃 */
     --bg-color: #121212;         /* 極深灰背景 */
     --card-bg: #1e1e1e;          /* 卡片背景 */
     --text-color: #ffffff;
     --text-muted: #aaaaaa;
     --border-color: #333333;
-    --hover-color: #e0a800;
-    --danger-color: #dc3545;
-    --success-color: #28a745;
-    --warning-color: #ffc107;
-    --info-color: #17a2b8;
+    --hover-color: #e4cf8e;
+    --danger-color: #e55d6a;
+    --success-color: #64c77b;
+    --warning-color: #f3917f;
+    --info-color: #49bed0;
 }
 
 * {
