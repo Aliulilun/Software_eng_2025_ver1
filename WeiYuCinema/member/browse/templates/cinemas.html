@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影城資訊查詢 - 威宇影城</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+</head>
+<body>
+    <!-- 頁首佔位符 -->
+    <div id="header-placeholder"></div>
+    
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-title">
+            <h1>影城資訊查詢</h1>
+            <p>探索全台威宇影城據點</p>
+        </div>
+        
+        <!-- 搜尋功能 -->
+        <div class="section-box">
+            <h2 class="section-title">🔍 搜尋影城</h2>
+            <form method="GET" action="">
+                <div style="display: flex; gap: 20px; align-items: end;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="keyword">關鍵字搜尋</label>
+                        <input type="text" id="keyword" name="keyword" value="<?php echo htmlspecialchars($searchKeyword); ?>" placeholder="影城名稱或地址">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">🔍 搜尋</button>
+                        <button type="button" class="btn btn-secondary" onclick="location.href='cinemas.php'">清除</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 影城列表 -->
+        <div class="section-box">
+            <h2 class="section-title">🏢 影城列表</h2>
+            
+            <?php if (!empty($cinemas)): ?>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-top: 20px;">
+                    <?php foreach ($cinemas as $cinema): ?>
+                        <div class="cinema-card" style="background: #2c2c2c; border-radius: 12px; padding: 25px; transition: transform 0.3s, box-shadow 0.3s;">
+                            <h3 style="margin: 0 0 15px 0; color: var(--primary-color); font-size: 20px;">
+                                <?php echo htmlspecialchars($cinema['cinemaName']); ?>
+                            </h3>
+                            
+                            <div class="cinema-info" style="margin-bottom: 20px;">
+                                <p style="margin: 8px 0; display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--text-muted);">📍</span>
+                                    <span><?php echo htmlspecialchars($cinema['cinemaAddress']); ?></span>
+                                </p>
+                                <p style="margin: 8px 0; display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--text-muted);">📞</span>
+                                    <span><?php echo htmlspecialchars($cinema['cinemaPhone']); ?></span>
+                                </p>
+                            </div>
+                            
+                            <div class="cinema-actions" style="display: flex; gap: 10px;">
+                                <a href="cinema_detail.php?id=<?php echo $cinema['cinemaId']; ?>" class="btn btn-info" style="flex: 1; text-align: center; font-size: 14px; padding: 10px;">
+                                    詳細資訊
+                                </a>
+                                <a href="showings.php?cinema=<?php echo $cinema['cinemaId']; ?>" class="btn btn-primary" style="flex: 1; text-align: center; font-size: 14px; padding: 10px;">
+                                    查看場次
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center" style="padding: 60px 20px;">
+                    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;">🏢</div>
+                    <h3 class="text-muted">沒有找到符合條件的影城</h3>
+                    <p class="text-muted">請調整搜尋條件或稍後再試</p>
+                    <button class="btn btn-primary" onclick="location.href='cinemas.php'" style="margin-top: 20px;">
+                        查看所有影城
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- 返回按鈕 -->
+        <div class="text-center" style="margin-top: 40px;">
+            <a href="../index.php" class="btn btn-secondary" style="padding: 15px 30px; font-size: 16px;">
+                ← 返回會員首頁
+            </a>
+        </div>
+    </div>
+    
+    <!-- 頁尾佔位符 -->
+    <div id="footer-placeholder"></div>
+    
+    <!-- 載入核心JavaScript -->
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+    
+    <script>
+        // 影城卡片懸停效果
+        document.querySelectorAll('.cinema-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 15px 35px rgba(0,0,0,0.6)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.4)';
+            });
+        });
+    </script>
+</body>
+</html>
