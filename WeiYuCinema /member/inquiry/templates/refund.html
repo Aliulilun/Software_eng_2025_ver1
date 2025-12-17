@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>退票申請 - 威宇影城售票系統</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+</head>
+<body>
+    <!-- 頁首佔位符 -->
+    <div id="header-placeholder"></div>
+
+    <!-- 主要內容 -->
+    <div class="container">
+        <div class="page-title">
+            <h1>🔄 退票申請</h1>
+            <p>訂單編號：<?php echo htmlspecialchars($record['orderNumber']); ?></p>
+        </div>
+
+        <!-- 訂單資訊 -->
+        <div class="section-box">
+            <h2 class="section-title">📋 訂單資訊</h2>
+            <div class="order-summary">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>電影：</strong>
+                        <span><?php echo htmlspecialchars($record['movieName']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>影城：</strong>
+                        <span><?php echo htmlspecialchars($record['cinemaName']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>影廳：</strong>
+                        <span><?php echo htmlspecialchars($record['theaterName']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>場次：</strong>
+                        <span><?php echo $record['showingDate']; ?> <?php echo $record['startTime']; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>座位：</strong>
+                        <span><?php echo htmlspecialchars($record['seat']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>票數：</strong>
+                        <span><?php echo $record['ticketNums']; ?> 張</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>總金額：</strong>
+                        <span class="price">$<?php echo number_format($record['totalPrice']); ?></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>訂單狀態：</strong>
+                        <span class="status status-<?php echo $record['orderStatusId']; ?>">
+                            <?php echo htmlspecialchars($record['orderStatusName']); ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 退票申請表單 -->
+        <div class="section-box">
+            <h2 class="section-title">🔄 退票申請</h2>
+            
+            <?php if (!$canRefund): ?>
+            <div class="message error">
+                <p>❌ <?php echo $refundMessage; ?></p>
+                <div class="form-actions">
+                    <a href="detail.php?orderNumber=<?php echo urlencode($orderNumber); ?>" class="btn btn-secondary">返回詳情</a>
+                    <a href="index.php" class="btn btn-primary">返回列表</a>
+                </div>
+            </div>
+            <?php else: ?>
+            
+            <?php if (!empty($refundMessage)): ?>
+            <div class="message error">
+                <?php echo $refundMessage; ?>
+            </div>
+            <?php endif; ?>
+            
+            <div class="refund-notice">
+                <h3>⚠️ 退票須知</h3>
+                <ul>
+                    <li>退票必須在電影開演前2小時完成</li>
+                    <li>退款金額將全額退回您的會員儲值卡</li>
+                    <li>退票後座位將重新開放給其他會員預訂</li>
+                    <li>退票完成後無法復原，請謹慎操作</li>
+                    <li>如有疑問請聯繫客服：02-1234-5678</li>
+                </ul>
+            </div>
+            
+            <form method="POST" class="refund-form">
+                <div class="form-group">
+                    <label for="refundReason">退票原因 <span class="required">*</span></label>
+                    <textarea id="refundReason" name="refundReason" rows="4" 
+                              placeholder="請說明您的退票原因..." required></textarea>
+                </div>
+                
+                <div class="refund-summary">
+                    <div class="summary-item">
+                        <span>退款金額：</span>
+                        <span class="refund-amount">$<?php echo number_format($record['totalPrice']); ?></span>
+                    </div>
+                    <div class="summary-item">
+                        <span>退款方式：</span>
+                        <span>會員儲值卡</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-warning" 
+                            onclick="return confirm('確定要申請退票嗎？此操作無法復原。')">
+                        🔄 確認退票
+                    </button>
+                    <a href="detail.php?orderNumber=<?php echo urlencode($orderNumber); ?>" 
+                       class="btn btn-secondary">取消</a>
+                </div>
+            </form>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- 頁尾佔位符 -->
+    <div id="footer-placeholder"></div>
+
+    <!-- 載入核心JavaScript -->
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+</body>
+</html>

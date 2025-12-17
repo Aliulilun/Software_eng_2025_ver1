@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇座位 - 威宇影城</title>
+    <link rel="stylesheet" href="/WeiYuCinema/static/css/style.css">
+    <style>
+        /* 基礎樣式 */
+        .seat-map { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .seat-row { display: flex; gap: 8px; align-items: center; justify-content: center; }
+        .row-label { width: 40px; text-align: center; font-weight: bold; font-size: 16px; color: #e0a800; }
+        
+        /* 座位樣式 */
+        .seat { width: 35px; height: 35px; border: 2px solid; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; user-select: none; }
+        
+        .seat.available { background: #28a745; border-color: #229954; color: white; }
+        .seat.available:hover { background: #218838; }
+        
+        /* 已售出樣式 (雖然 PHP 那邊有強制寫 style，但這裡留著保險) */
+        .seat.occupied { background: #6c757d !important; border-color: #6c757d; color: white; opacity: 0.6; pointer-events: none; cursor: not-allowed; }
+        
+        .seat.selected { background: #ffc107 !important; border-color: #e0a800 !important; color: #000 !important; transform: scale(1.1); }
+        
+        /* 其他區塊樣式 */
+        .ticket-selector { margin-bottom: 15px; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #ddd; }
+        .ticket-selector select { padding: 5px; font-size: 16px; border-radius: 4px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .booking-summary { background: #2c2c2c; color: white; padding: 25px; border-radius: 12px; margin-top: 20px; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:disabled { background-color: #6c757d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div class="container">
+        <div class="page-title">
+            <h1>選擇座位</h1>
+        </div>
+        
+        <div class="section-box">
+            <div class="showing-info" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px;">
+                <h3>{{MOVIE_NAME}}</h3>
+                <p>{{CINEMA_NAME}} - {{THEATER_NAME}}</p>
+                <p>{{SHOWING_DATE}} {{START_TIME}} ({{VERSION_NAME}})</p>
+                
+                <div class="ticket-selector" style="color: #333; margin-top: 15px;">
+                    <label for="ticketTypeSelect"><strong>🎫 選擇票種：</strong></label>
+                    <select id="ticketTypeSelect" onchange="updatePrice()">
+                        {{TICKET_OPTIONS}}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-box">
+            <h3 class="section-title">🎬 銀幕</h3>
+            <div class="screen" style="background: #333; height: 10px; margin-bottom: 30px; border-radius: 50%;"></div>
+            
+            <div class="seat-map">
+                {{SEAT_MAP}}
+            </div>
+        </div>
+        
+        <div class="booking-summary">
+            <h3>📋 訂票摘要</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <p>已選座位：<span id="selectedSeats" style="color: #ffc107;">尚未選擇</span></p>
+                    <p>票數：<span id="ticketCount">0</span> 張</p>
+                </div>
+                <div>
+                    <p>單價：<span id="displayPrice">NT$ {{DEFAULT_PRICE}}</span></p>
+                    <p>總金額：<span id="totalPrice" style="font-size: 24px; color: #ffc107;">NT$ 0</span></p>
+                </div>
+            </div>
+            
+            <form action="select_meal.php" method="POST" id="seatForm">
+                <input type="hidden" name="showingId" value="{{SHOWING_ID}}">
+                <input type="hidden" name="selectedSeats" id="selectedSeatsInput">
+                <input type="hidden" name="ticketCount" id="ticketCountInput">
+                <input type="hidden" name="totalPrice" id="totalPriceInput">
+                <input type="hidden" name="ticketClassId" id="ticketClassIdInput" value="1">
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" id="nextBtn" class="btn" disabled>下一步：選擇餐點</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/WeiYuCinema/static/js/script.js"></script>
+    <script>
+        let selectedSeats = [];
+        let currentPrice = {{DEFAULT_PRICE}}; // 這裡可以放，因為它是被替換成數字
+        
+        function updatePrice() {
+            const select = document.getElementById('ticketTypeSelect');
+            const option = select.options[select.selectedIndex];
+            currentPrice = parseInt(option.dataset.price);
+            
+            document.getElementById('displayPrice').textContent = 'NT$ ' + currentPrice;
+            document.getElementById('ticketClassIdInput').value = select.value;
+            
+            updateBookingSummary();
+        }
+
+        // 座位點擊事件
+        document.body.addEventListener('click', function(e) {
+            // 只允許點擊有 .seat 和 .available 的元素
+            // 因為 PHP 已經給已售出的座位加上了 .occupied 並且拿掉了 .available，所以這裡不會觸發
+            if (e.target.classList.contains('seat') && e.target.classList.contains('available')) {
+                const seatId = e.target.dataset.seat;
+                
+                if (e.target.classList.contains('selected')) {
+                    e.target.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s !== seatId);
+                } else {
+                    if (selectedSeats.length >= 6) {
+                        alert('最多選擇 6 個座位');
+                        return;
+                    }
+                    e.target.classList.add('selected');
+                    selectedSeats.push(seatId);
+                }
+                updateBookingSummary();
+            }
+        });
+        
+        function updateBookingSummary() {
+            const count = selectedSeats.length;
+            const total = count * currentPrice;
+            
+            document.getElementById('selectedSeats').textContent = count > 0 ? selectedSeats.join(', ') : '尚未選擇';
+            document.getElementById('ticketCount').textContent = count;
+            document.getElementById('totalPrice').textContent = 'NT$ ' + total;
+            
+            document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
+            document.getElementById('ticketCountInput').value = count;
+            document.getElementById('totalPriceInput').value = total;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = count === 0;
+            nextBtn.style.opacity = count > 0 ? '1' : '0.5';
+        }
+        
+        // 初始化檢查 (如果 DEFAULT_PRICE 沒被替換到，給個預設值以免報錯)
+        if (isNaN(currentPrice)) currentPrice = 330;
+        updatePrice();
+    </script>
+</body>
+</html>

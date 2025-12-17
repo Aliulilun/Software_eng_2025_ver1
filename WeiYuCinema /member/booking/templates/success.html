@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂票成功 - 威宇影城</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: rgba(44, 62, 80, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            margin-top: 10px;
+            text-align: right;
+        }
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        nav a:hover {
+            color: #3498db;
+        }
+        .main-content {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .success-header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .success-header h1 {
+            font-size: 42px;
+            margin: 0 0 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .success-header p {
+            font-size: 18px;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .ticket-info {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin: 0;
+        }
+        .ticket-info h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+        }
+        .ticket-num {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: inline-block;
+            letter-spacing: 3px;
+            border: 2px dashed rgba(255,255,255,0.5);
+        }
+        .ticket-info p {
+            margin: 15px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .order-info {
+            padding: 40px;
+        }
+        .order-info h2 {
+            color: #2c3e50;
+            margin: 0 0 25px 0;
+            font-size: 28px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .info-grid {
+            display: grid;
+            gap: 15px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        .info-value {
+            color: #34495e;
+            font-size: 16px;
+            text-align: right;
+        }
+        .meal-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .meal-section h4 {
+            margin: 0 0 15px 0;
+            color: #27ae60;
+            font-size: 18px;
+        }
+        .meal-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .meal-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #d5f4e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .meal-list li:last-child {
+            border-bottom: none;
+        }
+        .meal-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .meal-qty {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .meal-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .no-meals {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            margin: 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .btn {
+            padding: 15px 30px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 8px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+        .btn-info:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+        }
+        .important-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .important-note h4 {
+            margin: 0 0 10px 0;
+            color: #b7950b;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .success-header h1 {
+                font-size: 32px;
+            }
+            .ticket-num {
+                font-size: 28px;
+                padding: 12px 20px;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            .info-value {
+                text-align: center;
+            }
+            .meal-list li {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+            .btn {
+                display: block;
+                margin: 10px auto;
+                width: 80%;
+                max-width: 300px;
+            }
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        @keyframes confetti {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 威宇影城 - 訂票成功</h1>
+            <nav>
+                <span>歡迎，{{MEMBER_NAME}}！</span> | 
+                <a href="../index.php">會員首頁</a> | 
+                <a href="../browse/movies.php">瀏覽電影</a> | 
+                <a href="../inquiry/index.php">訂票紀錄</a> | 
+                <a href="../../auth/logout.php">登出</a>
+            </nav>
+        </header>
+        
+        <div class="main-content">
+            <div class="success-header">
+                <h1>🎉 訂票成功！</h1>
+                <p>感謝您的購票，祝您觀影愉快！</p>
+            </div>
+            
+            <div class="ticket-info">
+                <h3>🎫 取票號碼</h3>
+                <div class="ticket-num">{{GET_TICKET_NUM}}</div>
+                <p>請憑此號碼至影城櫃台或自動取票機取票</p>
+            </div>
+            
+            <div class="important-note">
+                <h4>📋 重要提醒</h4>
+                <p>請於開演前30分鐘完成取票，並提早入場以免影響其他觀眾</p>
+            </div>
+            
+            <div class="order-info">
+                <h2>📋 訂單詳情</h2>
+                
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="info-label">🔖 訂單編號</span>
+                        <span class="info-value">{{ORDER_NUMBER}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🎬 電影</span>
+                        <span class="info-value">{{MOVIE_NAME}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🏢 影城</span>
+                        <span class="info-value">{{CINEMA_NAME}} - {{THEATER_NAME}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🕐 場次</span>
+                        <span class="info-value">{{SHOWING_DATE}} {{START_TIME}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📽️ 版本</span>
+                        <span class="info-value">{{VERSION_NAME}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">💺 座位</span>
+                        <span class="info-value">{{SELECTED_SEATS}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🎫 票數</span>
+                        <span class="info-value">{{TICKET_COUNT}} 張</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">💰 總金額</span>
+                        <span class="info-value">NT$ {{TOTAL_PRICE}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">⏰ 訂票時間</span>
+                        <span class="info-value">{{ORDER_TIME}}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📊 訂單狀態</span>
+                        <span class="info-value">{{ORDER_STATUS}}</span>
+                    </div>
+                </div>
+                
+                <div class="meal-section">
+                    <h4>🍿 選購餐點</h4>
+                    {{SELECTED_MEALS}}
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="../inquiry/index.php" class="btn btn-info">📋 查看訂票紀錄</a>
+                <a href="booking.php" class="btn btn-success">🎬 繼續購票</a>
+                <a href="../index.php" class="btn btn-primary">🏠 返回會員首頁</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 頁面載入完成後的慶祝效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 簡單的成功提示
+            console.log('🎉 訂票成功！');
+            
+            // 可以添加一些慶祝動畫效果
+            setTimeout(function() {
+                // 這裡可以添加一些視覺效果
+            }, 500);
+        });
+        
+        // 防止重複提交（返回上一頁時的保護）
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+        
+        window.addEventListener('beforeunload', function(e) {
+            // 當用戶嘗試離開頁面時，不需要特別警告
+            // 因為訂票已經完成
+        });
+    </script>
+</body>
+</html>
